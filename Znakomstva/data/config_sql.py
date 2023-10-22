@@ -20,7 +20,7 @@ async def create_tables():
                         db.Column("Name", db.Text),
                         db.Column("Age", db.Integer),
                         db.Column("City", db.Text),
-                        db.Column("Foto/Video", db.Text),
+                        db.Column("Photo/Video", db.Text),
                         db.Column("NameTG", db.Text),
                         db.Column("Male/Female", db.Text),
                         db.Column("Description", db.Text)
