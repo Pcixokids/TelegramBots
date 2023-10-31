@@ -1,7 +1,8 @@
 import sqlalchemy as db
 from aiogram import types
-from main import engine
 
+
+engine = db.create_engine('sqlite:///data/prod_sqlite.db')
 async def insert_in_table_registration(user_id, name, age, city, photo, username, sex, description, target):
     #engine = db.create_engine('sqlite:///data/prod_sqlite.db')
     metadata = db.MetaData()
