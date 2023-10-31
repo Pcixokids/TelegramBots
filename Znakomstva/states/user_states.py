@@ -7,3 +7,4 @@ class registration_state(StatesGroup):
     age = State()
     city = State()
     description = State()
+    foto = State()

@@ -9,6 +9,8 @@ from keyboards.user_keyboards import *
 
 from states.user_states import registration_state
 
+from data.config_sql import insert_in_table_registration
+
 start_text = """
 <b>Приветствую в боте знакомств</b>
 
@@ -80,15 +82,33 @@ async def description_h(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['description'] = message.text
 
-    await bot.send_message(message.from_user.id,
-                           md.text(
-                               md.text('Привет! ', md.bold(data['name'])),
-                               md.text('Твой возраст: ', md.code(data['age'])),
-                               md.text('Твой город: ', md.italic(data['city'])),
-                               md.text('Твой пол: ', md.bold(data['sex'])),
-                               md.text('С кем хочешь знакомиться: ', data['target']),
-                               md.text('Твое описание: ', data['description']),
-                               sep='\n'
-                           ))
+    await registration_state.next()
+    await bot.send_message(message.from_user.id, "Пришлите фото для анкеты")
+    # await bot.send_message(message.from_user.id,
+    #                        md.text(
+    #                            md.text('Привет! ', md.bold(data['name'])),
+    #                            md.text('Твой возраст: ', md.code(data['age'])),
+    #                            md.text('Твой город: ', md.italic(data['city'])),
+    #                            md.text('Твой пол: ', md.bold(data['sex'])),
+    #                            md.text('С кем хочешь знакомиться: ', data['target']),
+    #                            md.text('Твое описание: ', data['description']),
+    #                            sep='\n'
+    #                        ))
 
+    # await state.finish()
+
+@dp.message_handler(state=registration_state.foto, content_types=ContentType.PHOTO)
+async def foto_h(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['photo'] = message.photo[-1].file_id
+
+    await insert_in_table_registration(user_id=int(message.from_user.id),
+                                       name=data['name'],
+                                       age=data['age'],
+                                       city=data['city'],
+                                       photo=data['photo'],
+                                       username=message.from_user.username,
+                                       sex=data['sex'],
+                                       description=data['description'],
+                                       target=data['target'])
     await state.finish()
